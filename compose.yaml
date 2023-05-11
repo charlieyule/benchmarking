@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  kafka:
+    image: bitnami/kafka:3.4.0
+    ports:
+      - "9092:9092"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+  redis:
+    image: redis:7.0.11
+    ports:
+      - "6379:6379"
