@@ -10,17 +10,17 @@ const (
 	key = "message"
 )
 
-type RedisStream struct {
+type Stream struct {
 	client     redis.Cmdable
 	streamName string
 	lastReadId string
 }
 
-func NewRedisStream(client redis.Cmdable, streamName string) *RedisStream {
-	return &RedisStream{client, streamName, "0"}
+func NewStream(client redis.Cmdable, streamName string) *Stream {
+	return &Stream{client, streamName, "0"}
 }
 
-func (r *RedisStream) Produce(ctx context.Context, msg string) error {
+func (r *Stream) Produce(ctx context.Context, msg string) error {
 	return r.client.XAdd(ctx, &redis.XAddArgs{
 		Stream: r.streamName,
 		Values: map[string]interface{}{
@@ -29,7 +29,7 @@ func (r *RedisStream) Produce(ctx context.Context, msg string) error {
 	}).Err()
 }
 
-func (r *RedisStream) Consume(ctx context.Context) (<-chan string, <-chan error) {
+func (r *Stream) Consume(ctx context.Context) (<-chan string, <-chan error) {
 	ch := make(chan string)
 	errCh := make(chan error)
 	go func() {

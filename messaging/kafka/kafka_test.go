@@ -20,7 +20,7 @@ func TestKafkaTopic(t *testing.T) {
 	cleanup(ctx)
 	startup(ctx)
 	defer cleanup(ctx)
-	kt := kafka.NewKafkaTopic(host, topic)
+	kt := kafka.NewTopic(host, topic)
 	res, err := produceAndConsume(ctx, kt, msg)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -44,7 +44,7 @@ func Benchmark(b *testing.B) {
 	cleanup(ctx)
 	startup(ctx)
 	defer cleanup(ctx)
-	kt := kafka.NewKafkaTopic(host, topic)
+	kt := kafka.NewTopic(host, topic)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		produceAndConsume(ctx, kt, msg)
@@ -70,7 +70,7 @@ func cleanup(ctx context.Context) error {
 	return nil
 }
 
-func produceAndConsume(ctx context.Context, kt *kafka.KafkaTopic, msg string) (string, error) {
+func produceAndConsume(ctx context.Context, kt *kafka.Topic, msg string) (string, error) {
 	msgCh, errCh := kt.Consume(ctx)
 	if err := kt.Produce(ctx, msg); err != nil {
 		return "", err

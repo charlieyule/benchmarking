@@ -7,5 +7,5 @@ type Producer interface {
 }
 
 type Consumer interface {
-	Consume(ctx context.Context) (<-chan string, error)
+	Consume(ctx context.Context) (<-chan string, <-chan error)
 }

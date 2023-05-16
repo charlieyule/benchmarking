@@ -10,12 +10,12 @@ var (
 	key = []byte("message")
 )
 
-type KafkaTopic struct {
+type Topic struct {
 	r *kafkaGo.Reader
 	w *kafkaGo.Writer
 }
 
-func NewKafkaTopic(host, topic string) *KafkaTopic {
+func NewTopic(host, topic string) *Topic {
 	brokers := []string{host}
 	r := kafkaGo.NewReader(kafkaGo.ReaderConfig{
 		Brokers:   brokers,
@@ -29,13 +29,13 @@ func NewKafkaTopic(host, topic string) *KafkaTopic {
 		Topic:    topic,
 		Balancer: &kafkaGo.LeastBytes{},
 	})
-	return &KafkaTopic{
+	return &Topic{
 		r: r,
 		w: w,
 	}
 }
 
-func (kt *KafkaTopic) Produce(ctx context.Context, msg string) error {
+func (kt *Topic) Produce(ctx context.Context, msg string) error {
 	return kt.w.WriteMessages(
 		ctx,
 		kafkaGo.Message{
@@ -45,7 +45,7 @@ func (kt *KafkaTopic) Produce(ctx context.Context, msg string) error {
 	)
 }
 
-func (kt *KafkaTopic) Consume(ctx context.Context) (<-chan string, <-chan error) {
+func (kt *Topic) Consume(ctx context.Context) (<-chan string, <-chan error) {
 	ch := make(chan string)
 	errCh := make(chan error)
 	go func() {
@@ -64,7 +64,7 @@ func (kt *KafkaTopic) Consume(ctx context.Context) (<-chan string, <-chan error)
 	return ch, errCh
 }
 
-func (kt *KafkaTopic) Close() {
+func (kt *Topic) Close() {
 	kt.w.Close()
 	kt.r.Close()
 }

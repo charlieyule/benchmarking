@@ -14,7 +14,7 @@ func TestRedisStream(t *testing.T) {
 	ctx := context.Background()
 	client := createClient()
 	defer cleanup(ctx, client)
-	r := NewRedisStream(client, streamName)
+	r := NewStream(client, streamName)
 	res, err := produceAndConsume(ctx, r, msg)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -35,7 +35,7 @@ func Benchmark(b *testing.B) {
 	ctx := context.Background()
 	client := createClient()
 	defer cleanup(ctx, client)
-	r := NewRedisStream(client, streamName)
+	r := NewStream(client, streamName)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		produceAndConsume(ctx, r, msg)
@@ -52,7 +52,7 @@ func cleanup(ctx context.Context, client *redis.Client) error {
 	return client.Del(ctx, streamName).Err()
 }
 
-func produceAndConsume(ctx context.Context, r *RedisStream, msg string) (string, error) {
+func produceAndConsume(ctx context.Context, r *Stream, msg string) (string, error) {
 	msgCh, errCh := r.Consume(ctx)
 	if err := r.Produce(ctx, msg); err != nil {
 		return "", err
